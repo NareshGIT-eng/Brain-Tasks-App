@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brain-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brain
+  template:
+    metadata:
+      labels:
+        app: brain
+    spec:
+      containers:
+      - name: brain
+        image: 440744235671.dkr.ecr.ap-south-1.amazonaws.com/brain-ecr:react_image
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: applogs
+          mountPath: /app-logs
+        args:
+        - -config
+        - /etc/cwagentconfig/cwagentconfig.json
+        - -envconfig
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+
+      volumes:
+      - name: applogs
+        emptyDir: {}
+      - name: cwagentconfig
+        configMap:
+          name: cwagentconfig
