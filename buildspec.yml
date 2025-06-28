@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+    - echo Logging in to Amazon ECR...
+    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 440744235671.dkr.ecr.ap-south-1.amazonaws.com
+    - echo Logging in to Docker Hub...
+    - echo "$DOCKERHUB_PASS" | docker login -u "nareshk321" --password-stdin
+  build:
+    commands:
+    - echo Build started on `date`
+    - docker build -t brain-app .
+    - docker tag brain-app:latest 440744235671.dkr.ecr.ap-south-1.amazonaws.com/brain-ecr:react_image
+  post_build:
+    commands:
+    - echo Build completed on `date`
+    - docker push 440744235671.dkr.ecr.ap-south-1.amazonaws.com/brain-ecr:react_image
